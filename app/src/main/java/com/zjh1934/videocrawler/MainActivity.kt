@@ -127,7 +127,7 @@ class MainActivity : Activity() {
             logText.text = log.toString()
             scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
         }
-        if (Looper.myLooper() == Looper.getMainLooper()) body() else runOnUiThread(body)
+        if (Looper.myLooper() == Looper.getMainLooper()) body() else runOnUiThread { body() }
     }
 
     private fun label(

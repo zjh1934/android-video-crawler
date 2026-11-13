@@ -84,7 +84,7 @@ class VideoDetector(private val config: () -> CrawlConfig = { CrawlConfig.DEFAUL
             }
         }
         try {
-            val mime = conn.headerField("Content-Type")
+            val mime = conn.getHeaderField("Content-Type")
             val head = conn.inputStream.bufferedReader().use { r ->
                 val buf = CharArray(7)
                 val n = r.read(buf)

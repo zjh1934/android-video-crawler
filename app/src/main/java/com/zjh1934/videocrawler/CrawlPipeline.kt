@@ -53,7 +53,7 @@ class CrawlPipelineImpl(
                         }
                         Thread.sleep(config.pageLoadWaitMs.coerceAtLeast(500L))
                     }
-            } catch (_: InterruptedException) {
+            } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
             } catch (e: Throwable) {
                 activity.runOnUiThread { onLog("爬取出错：${e.javaClass.simpleName} ${e.message.orEmpty()}") }
