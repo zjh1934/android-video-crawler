@@ -1,10 +1,10 @@
 [versions]
-agp = "8.6.1"
+agp = "8.5.2"
 kotlin = "1.9.24"
 gradleWrapper = "8.7"
-compileSdk = "35"
+compileSdk = "34"
 minSdk = "26"
-targetSdk = "35"
+targetSdk = "34"
 
 coreKtx = "1.13.1"
 appcompat = "1.7.0"

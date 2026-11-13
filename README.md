@@ -13,7 +13,7 @@
 
 开发沙盒没有 Android SDK，不本地出包。所有构建交给
 [`.github/workflows/android-ci.yml`](.github/workflows/android-ci.yml)：
-JDK 17 → Android SDK 35 → `./gradlew assembleDebug` → 上传 APK artifact。
+JDK 17 → Android SDK 34 → `./gradlew assembleDebug` → 上传 APK artifact。
 在仓库 **Actions** 页打开最新一次运行，下载 `app-debug-skeleton` 即可。
 
 ## 目录
@@ -29,7 +29,7 @@ docs/                       看板 / 架构 / 上游清单
 
 ## 本地继续开发
 
-Android Studio Ladybug+ / JDK 17 / Android SDK 35：
+Android Studio Ladybug+ / JDK 17 / Android SDK 34：
 
 ```bash
 git clone https://github.com/zjh1934/android-video-crawler.git

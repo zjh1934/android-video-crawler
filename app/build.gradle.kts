@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.zjh1934.videocrawler"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.zjh1934.videocrawler"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "0.1.0-skeleton"
     }

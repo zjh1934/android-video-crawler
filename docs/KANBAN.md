@@ -26,7 +26,7 @@
 【本轮做了什么 R3】
  ✅ 用凭证确认账号 zjh1934，新建公开仓库 android-video-crawler (main)
  ✅ 在 /data/workspace/android-video-crawler 搭起可编译的 Android 骨架：
-    Gradle 8.7 + AGP 8.6.1 + Kotlin 1.9.24 + JDK17 / compileSdk35 / minSdk26
+    Gradle 8.7 + AGP 8.5.2 + Kotlin 1.9.24 + JDK17 / compileSdk34 / minSdk26
     gradlew + wrapper.jar 齐备；单 app 模块，零业务逻辑
  ✅ 落地接口契约：VideoHit / VideoSniffer / CrawlPlanner / DownloadQueue / CrawlPipeline
  ✅ 落地参数模型 CrawlConfig（深度/页数/并发/限速/Cookie/代理/格式模板…）
