@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ============================================================
+         R3 已启用：只拿「真能办事」的最小可用权限集
+         ============================================================ -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Android 14+ 前台服务必须声明 type，配合常驻通知让后台下载不被杀 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- ============================================================
+         R5/R6 按需开启：能办事但有代价（Play 审核 / 用户显著披露）
+         开启前必须在 docs/ARCHITECTURE.md 记录理由与替代方案评估
+         ============================================================
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    -->
+
+    <!-- 存储策略：Android 11+ 走 MediaStore / SAF 写 Download/ 即可，
+         不申请全盘权限；需要自定义目录时由用户通过 SAF 授权。 -->
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- R5 占位：前台下载服务（对齐 Seal 的 DownloadService.kt）
+        <service
+            android:name=".download.DownloadService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        -->
+
+        <!-- R6 占位：VpnService 本地 L4 代理，抓「别的 App」里的视频流，
+             无需 root，参考 PCAPdroid。非必要不启用。 -->
+    </application>
+
+</manifest>
