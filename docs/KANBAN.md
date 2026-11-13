@@ -7,54 +7,58 @@
  流动看板 · android-video-crawler
  仓库   : https://github.com/zjh1934/android-video-crawler
  工作区 : /data/workspace/android-video-crawler  (与仓库同步)
- 轮次   : R3 / 2026-11-13
+ 轮次   : R4 / 2026-11-13
 ========================================================
 
 【前两轮做了什么】
- R1  提出需求：安卓浏览器给一个网址就自动在站内找视频并爬取；
-     参数借鉴开源、核心不自己写、权限越大越好。
-     → 完成开源选型与评估：
-       super-video-downloader(WebView 嗅探) / yt-dlp + youtubedl-android(解析下载)
-       / Seal(队列与设置面板) / V4AW、QuickTube、sniffWebkit(备选)。
-     → 给出权限分档结论：前台服务+通知+MediaStore 是真办事的最小集；
-       MANAGE_EXTERNAL_STORAGE、VpnService 有条件可用；
-       无障碍/ROOT/无关隐私权限不拿。
- R2  下达本轮指令：给 GitHub 凭证，在 workspace 起项目、新建仓库并同步、
+ R2  下达指令：给 GitHub 凭证，在 workspace 起项目、新建仓库并同步、
      先搭骨架不出成品、沙盒无 SDK 改用 GitHub CI 打包、
      增加流动看板且每轮用代码框汇报。
+ R3  新建公开仓库 zjh1934/android-video-crawler (main)；
+     workspace 搭起可编译 Android 骨架（Gradle 8.7 + AGP 8.5.2 + JDK17
+     / compileSdk34）；
+     落地四个能力契约 + CrawlConfig 参数模型 + 分档权限 Manifest；
+     docs/UPSTREAM.md / ARCHITECTURE.md / KANBAN.md；
+     GitHub Actions 打包 APK，CI 排障三次后跑绿
+     （去第三方 setup-android → 换损坏的 wrapper.jar → core-ktx 降级）；
+     git push 被网络策略拦，改走 Git Data API 同步，tree 与仓库一致。
+     产出 app-debug-skeleton 空壳 APK。
 
-【本轮做了什么 R3】
- ✅ 新建公开仓库 zjh1934/android-video-crawler (main)
- ✅ workspace 搭起可编译 Android 骨架：
-    Gradle 8.7 + AGP 8.5.2 + Kotlin 1.9.24 + JDK17
-    / compileSdk34 / minSdk26 / gradlew + wrapper.jar 齐备
- ✅ 接口契约：VideoHit / VideoSniffer / CrawlPlanner / DownloadQueue / CrawlPipeline
- ✅ 参数模型 CrawlConfig（深度/页数/并发/限速/Cookie/代理/格式模板…）
- ✅ Manifest 分档声明「真办事」权限，高危权限注释留位
- ✅ GitHub Actions：assembleDebug → 上传 app-debug-skeleton APK，CI 已绿
- ✅ docs/UPSTREAM.md（借鉴清单+许可证）、docs/ARCHITECTURE.md（数据流/模块演进）
- ✅ 本看板 docs/KANBAN.md，并写进 CI Run Summary
- ✅ workspace 与仓库 tree 完全一致（git push 被网络策略拦，改走 Git Data API 同步）
- ⚠ CI 排障三次：去掉第三方 setup-android（runner 自带 SDK）、
-    换掉损坏的 gradle-wrapper.jar、core-ktx 降到 1.12.0 匹配 SDK34；
-    并加了「失败日志回传 Issue」便于沙盒侧定位
- ⚠ 未做：任何真实抓取/下载逻辑、成品功能、Compose 界面
+【本轮做了什么 R4】自主推进，未新增成品功能，只添砖加瓦
+ ✅ 拆成 4 个模块：
+    :core:model（纯 JVM：CrawlConfig / VideoHit / MediaFormat / 契约）
+    :core:crawler（纯 JVM+Jsoup：BfsCrawlPlanner / UrlNormalizer / RobotsPolicy）
+    :core:sniffer（Android：SniffingWebViewClient / VideoDetector）
+    :app（MainActivity 可交互界面 + CrawlPipelineImpl 编排）
+ ✅ 核心不自己写：复刻 super-video-downloader 三处核心
+    VideoUtils → MediaFormat.kt（后缀/Content-Type/#EXTM3U 魔数三级判定）
+    CustomWebViewClient → SniffingWebViewClient.kt（主帧跳过、请求头透传、
+      返回 null 不吞响应）
+    IVideoDetector + TabViewModel → VideoDetector.kt（去重 + Range 异步探测）
+    每个文件头注明原文件路径；仓库整体转 GPL-3.0，补 LICENSE + NOTICE
+ ✅ 自己写上游没有的那层：给首页 → Jsoup 抽同域链接 → 去重 BFS →
+    深度/页数/间隔/robots 可控；HTML 里的 <video>/<source> 直链一并交出
+ ✅ 界面能真跑：输入 https 网址 → 逐页 WebView 真加载 → 命中 mp4/m3u8/
+    mpd/webm/flv 去重列出（只列不下载）
+ ✅ 纯 JVM 单测 13 例（格式判定、URL 归一化、BFS 深度/去重/上限、
+    robots、媒体直链、请求头透传），CI 增加 :core:model:test :core:crawler:test
+ ✅ 架构/上游/README/NOTICE/CI 文档全部同步到 R4
+ ⚠ 仍未做：yt-dlp 下载引擎、队列、参数面板、Compose、成品 APK 功能
+ ⚠ 合规：默认 respectRobots=true，只爬有权保存的内容，不碰 DRM/付费墙
 
 【后面准备做什么】
- R4  拆 :core:model / :core:sniffer / :core:crawler；
-     搬 super-video-downloader 的 shouldInterceptRequest 嗅探链路；
-     自己写同域 BFS 翻页器（上游没有这层）。
  R5  引 youtubedl-android(+ffmpeg/aria2c)，接 yt-dlp 解析与下载；
-     抄 Seal 的前台服务 + Room 队列 + 命令模板；参数翻译成 yt-dlp 命令行；
-     接 MediaStore 写入、断点续传、仅 WiFi。
- R6  Compose/Material3 设置面板与任务列表；
+     实现 DownloadQueue，抄 Seal 的前台服务 + Room 队列 + 命令模板；
+     把 CrawlConfig 翻译成 yt-dlp 命令行（-f/-o/--cookies/--proxy/aria2c）；
+     MediaStore 写入 Download/、断点续传、仅 WiFi、进度通知。
+ R6  Compose/Material3 参数面板与任务列表；
      按分发渠道决定是否开 MANAGE_EXTERNAL_STORAGE / 悬浮窗 / VpnService；
      CI 增加 release 签名构建与版本发布。
  合规 只爬有权保存的内容，遵守 ToS/robots，不碰 DRM/付费墙/登录墙。
 
 【CI】
  workflow: .github/workflows/android-ci.yml
- 最近一次: ✅ success (run 43388633588)
- 产物    : app-debug-skeleton → app-debug.apk（空壳，可安装验证骨架）
+ 任务    : 单测 → assembleDebug → 上传 app-debug-r4 APK + JUnit 报告
+ 状态    : ⏳ 本轮同步后运行中（上一轮 R3 为 success）
 ========================================================
 ```

@@ -1,4 +1,4 @@
-name: Android CI · 骨架构建与 APK 产物
+name: Android CI · 单测 + 骨架 APK
 
 on:
   push:
@@ -26,8 +26,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # 沙盒无 Android SDK，构建全在 CI 完成。
-      # ubuntu-latest 镜像自带 Android SDK，不依赖第三方 setup action。
+      # 沙盒无 Android SDK，构建全在 CI 完成；runner 镜像自带 SDK，不依赖第三方 setup action
       - name: 检查并补齐 Android SDK 组件
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
@@ -36,21 +35,26 @@ jobs:
           sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools" > /dev/null 2>&1 || true
           ls "$ANDROID_HOME/platforms"
 
-      - name: 编译 Debug APK（骨架验证，不产出成品功能）
+      - name: 纯 JVM 单测（翻页器 / 格式判定 / robots）
         run: |
           chmod +x gradlew
+          set -o pipefail
+          ./gradlew :core:model:test :core:crawler:test --no-daemon --stacktrace 2>&1 | tee test.log
+
+      - name: 编译 Debug APK（R4 可交互骨架）
+        run: |
           set -o pipefail
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
       # 沙盒侧读不到 Actions 日志（blob 域名被网络策略拦截），
       # 失败时把关键输出回传成 Issue，方便在 workspace 侧定位并修复。
-      - name: 失败时回传构建日志
+      - name: 失败时回传日志
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tail -n 120 build.log > ci-slice.log || true
-          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+          { echo "==== test.log ===="; tail -n 90 test.log 2>/dev/null; echo "==== build.log ===="; tail -n 90 build.log 2>/dev/null; } > ci-slice.log || true
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all \
             --search "CI 构建失败日志" --json number -q '.[0].number' 2>/dev/null || true)
           if [ -z "$NUM" ]; then
             gh issue create --repo "$GITHUB_REPOSITORY" \
@@ -63,9 +67,19 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-skeleton
+          name: app-debug-r4
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      - name: 上传单测报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-reports
+          path: |
+            core/model/build/reports/tests/test/**/*
+            core/crawler/build/reports/tests/test/**/*
+          if-no-files-found: ignore
 
       - name: 把流动看板写进本次 Run Summary
         if: always()

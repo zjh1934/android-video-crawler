@@ -11,15 +11,12 @@ android {
         applicationId = "com.zjh1934.videocrawler"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0-skeleton"
+        versionCode = 2
+        versionName = "0.2.0-r4"
     }
 
     buildTypes {
-        debug {
-            // 骨架阶段不做混淆，便于后续逐块接入上游代码
-            isMinifyEnabled = false
-        }
+        debug { isMinifyEnabled = false }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -34,19 +31,15 @@ android {
 }
 
 dependencies {
-    // R3 骨架：只保留最小依赖，保证 CI 首次构建稳定
     implementation(libs.androidx.core.ktx)
+    implementation(project(":core:model"))
+    implementation(project(":core:crawler"))
+    implementation(project(":core:sniffer"))
 
-    // R4 接 WebView 嗅探（复用 super-video-downloader 的 shouldInterceptRequest 链路）
-    // implementation(libs.jsoup)
-    // R5 接 yt-dlp 引擎与队列（不自己写站点解析）
+    // R5 接 yt-dlp 引擎与前台下载队列（站点解析不自己写）：
     // implementation(libs.youtubedl.android.library)
     // implementation(libs.youtubedl.android.ffmpeg)
     // implementation(libs.youtubedl.android.aria2c)
-    // implementation(libs.androidx.room.runtime)
-    // R6 换 Compose UI（对齐 Seal 的 Material 3 设置面板）
-    // implementation(platform(libs.compose.bom))
-    // implementation(libs.compose.ui)
-    // implementation(libs.compose.material3)
+
     testImplementation(libs.junit)
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">站内视频爬取器</string>
-    <string name="skeleton_title">骨架已就绪 · 0.1.0-skeleton</string>
-    <string name="skeleton_hint">本轮只搭工程骨架与 CI，不实现抓取逻辑。后续按看板逐块接入。</string>
+    <string name="skeleton_title">站内视频爬取器 · R4 骨架</string>
+    <string name="skeleton_hint">给一个网址，自动翻页找视频；下载引擎 R5 接入</string>
 </resources>

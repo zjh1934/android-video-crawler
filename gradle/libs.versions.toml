@@ -7,42 +7,26 @@ minSdk = "26"
 targetSdk = "34"
 
 coreKtx = "1.12.0"
-appcompat = "1.7.0"
-material = "1.12.0"
-composeBom = "2024.12.01"
-activityCompose = "1.9.3"
-lifecycle = "2.8.7"
-room = "2.6.1"
-media3 = "1.5.0"
 jsoup = "1.18.1"
-okhttp = "4.12.0"
-youtubedlAndroid = "0.17.4"
 junit = "4.13.2"
 
-[libraries]
-# R3 骨架实际使用
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+# R5 起启用（yt-dlp 引擎与队列，先占位）
+youtubedlAndroid = "0.17.4"
+room = "2.6.1"
+composeBom = "2024.12.01"
 
-# R4+ 添砖加瓦时启用（先占位，不参与本轮编译）
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-# 核心下载引擎：直接引入封装，站点解析不自己写
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+# R5 占位：核心下载引擎直接引入封装，站点解析不自己写
 youtubedl-android-library = { group = "io.github.junkfood02.youtubedl-android", name = "library", version.ref = "youtubedlAndroid" }
 youtubedl-android-ffmpeg = { group = "io.github.junkfood02.youtubedl-android", name = "ffmpeg", version.ref = "youtubedlAndroid" }
 youtubedl-android-aria2c = { group = "io.github.junkfood02.youtubedl-android", name = "aria2c", version.ref = "youtubedlAndroid" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
