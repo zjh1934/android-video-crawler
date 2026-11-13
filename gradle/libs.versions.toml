@@ -6,7 +6,7 @@ compileSdk = "34"
 minSdk = "26"
 targetSdk = "34"
 
-coreKtx = "1.13.1"
+coreKtx = "1.12.0"
 appcompat = "1.7.0"
 material = "1.12.0"
 composeBom = "2024.12.01"

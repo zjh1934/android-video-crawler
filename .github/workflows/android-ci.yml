@@ -7,6 +7,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
           java-version: '17'
 
       # 沙盒无 Android SDK，构建全在 CI 完成。
-      # ubuntu-latest 镜像自带 Android SDK，不依赖第三方 setup action（首轮即因此失败）。
+      # ubuntu-latest 镜像自带 Android SDK，不依赖第三方 setup action。
       - name: 检查并补齐 Android SDK 组件
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
@@ -35,9 +39,28 @@ jobs:
       - name: 编译 Debug APK（骨架验证，不产出成品功能）
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          set -o pipefail
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+
+      # 沙盒侧读不到 Actions 日志（blob 域名被网络策略拦截），
+      # 失败时把关键输出回传成 Issue，方便在 workspace 侧定位并修复。
+      - name: 失败时回传构建日志
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tail -n 120 build.log > ci-slice.log || true
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "CI 构建失败日志" --json number -q '.[0].number' 2>/dev/null || true)
+          if [ -z "$NUM" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "CI 构建失败日志（自动）" --body-file ci-slice.log
+          else
+            gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --body-file ci-slice.log
+          fi
 
       - name: 上传 APK 产物
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-skeleton
@@ -45,6 +68,7 @@ jobs:
           if-no-files-found: error
 
       - name: 把流动看板写进本次 Run Summary
+        if: always()
         run: |
           echo "## 流动看板" >> "$GITHUB_STEP_SUMMARY"
           cat docs/KANBAN.md >> "$GITHUB_STEP_SUMMARY"
