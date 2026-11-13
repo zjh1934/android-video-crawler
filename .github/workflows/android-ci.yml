@@ -53,7 +53,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          { echo "==== test.log ===="; tail -n 90 test.log 2>/dev/null; echo "==== build.log ===="; tail -n 90 build.log 2>/dev/null; } > ci-slice.log || true
+          {
+            for f in test.log build.log; do
+              [ -f "$f" ] || continue
+              echo "==== $f (key lines) ===="
+              grep -nE "What went wrong|FAILURE:|Execution failed|Caused by:|InvalidPlugin|Could not|not found|e: file|e: |> Task .* FAILED|BUILD FAILED|^\* Try|^\* Get more help" "$f" | head -70
+              echo "==== $f (tail) ===="
+              tail -n 25 "$f"
+            done
+          } > ci-slice.log || true
           NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all \
             --search "CI 构建失败日志" --json number -q '.[0].number' 2>/dev/null || true)
           if [ -z "$NUM" ]; then

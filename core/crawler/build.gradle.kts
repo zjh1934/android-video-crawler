@@ -1,7 +1,7 @@
 import org.gradle.api.tasks.testing.Test
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("org.jetbrains.kotlin.jvm")
 }
 
 kotlin { jvmToolchain(17) }

@@ -4,6 +4,17 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    // Kotlin 的 android/jvm 两个插件来自同一 jar，若由各模块 alias 各自带版本请求，
+    // Gradle 会报 "plugin already on classpath with an unknown version"。
+    // 这里统一钉版本，子模块用 id(...) 不带版本即可。
+    // 版本与 gradle/libs.versions.toml 保持一致，升级时两处同改。
+    plugins {
+        id("com.android.application") version "8.5.2"
+        id("com.android.library") version "8.5.2"
+        id("org.jetbrains.kotlin.android") version "1.9.24"
+        id("org.jetbrains.kotlin.jvm") version "1.9.24"
+    }
 }
 
 dependencyResolutionManagement {
