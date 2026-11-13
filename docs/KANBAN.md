@@ -24,18 +24,21 @@
      增加流动看板且每轮用代码框汇报。
 
 【本轮做了什么 R3】
- ✅ 用凭证确认账号 zjh1934，新建公开仓库 android-video-crawler (main)
- ✅ 在 /data/workspace/android-video-crawler 搭起可编译的 Android 骨架：
-    Gradle 8.7 + AGP 8.5.2 + Kotlin 1.9.24 + JDK17 / compileSdk34 / minSdk26
-    gradlew + wrapper.jar 齐备；单 app 模块，零业务逻辑
- ✅ 落地接口契约：VideoHit / VideoSniffer / CrawlPlanner / DownloadQueue / CrawlPipeline
- ✅ 落地参数模型 CrawlConfig（深度/页数/并发/限速/Cookie/代理/格式模板…）
- ✅ Manifest 按分档声明「真办事」权限，高危权限注释留位
- ✅ GitHub Actions：setup-java17 + setup-android35 + assembleDebug + 上传 APK
- ✅ docs/UPSTREAM.md（核心代码借鉴清单+许可证）、docs/ARCHITECTURE.md（数据流/模块演进）
+ ✅ 新建公开仓库 zjh1934/android-video-crawler (main)
+ ✅ workspace 搭起可编译 Android 骨架：
+    Gradle 8.7 + AGP 8.5.2 + Kotlin 1.9.24 + JDK17
+    / compileSdk34 / minSdk26 / gradlew + wrapper.jar 齐备
+ ✅ 接口契约：VideoHit / VideoSniffer / CrawlPlanner / DownloadQueue / CrawlPipeline
+ ✅ 参数模型 CrawlConfig（深度/页数/并发/限速/Cookie/代理/格式模板…）
+ ✅ Manifest 分档声明「真办事」权限，高危权限注释留位
+ ✅ GitHub Actions：assembleDebug → 上传 app-debug-skeleton APK，CI 已绿
+ ✅ docs/UPSTREAM.md（借鉴清单+许可证）、docs/ARCHITECTURE.md（数据流/模块演进）
  ✅ 本看板 docs/KANBAN.md，并写进 CI Run Summary
- ✅ 代码 push 到 main，workspace 与仓库同步
- ⚠ 未做：任何真实抓取/下载逻辑、成品 APK 功能、Compose 界面
+ ✅ workspace 与仓库 tree 完全一致（git push 被网络策略拦，改走 Git Data API 同步）
+ ⚠ CI 排障三次：去掉第三方 setup-android（runner 自带 SDK）、
+    换掉损坏的 gradle-wrapper.jar、core-ktx 降到 1.12.0 匹配 SDK34；
+    并加了「失败日志回传 Issue」便于沙盒侧定位
+ ⚠ 未做：任何真实抓取/下载逻辑、成品功能、Compose 界面
 
 【后面准备做什么】
  R4  拆 :core:model / :core:sniffer / :core:crawler；
@@ -51,7 +54,7 @@
 
 【CI】
  workflow: .github/workflows/android-ci.yml
- 产物    : app-debug-skeleton (app/build/outputs/apk/debug/*.apk)
- 状态    : 已推送，等待首次 Actions 运行
+ 最近一次: ✅ success (run 43388633588)
+ 产物    : app-debug-skeleton → app-debug.apk（空壳，可安装验证骨架）
 ========================================================
 ```
