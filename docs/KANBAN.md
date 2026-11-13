@@ -1,6 +1,6 @@
 # 流动看板
 
-> 每轮对话结束前，把下面这份看板原样贴进回复的代码框里；本文件随仓库同步更新。
+> 每轮对话结束前，把下面这份看板原样贴进回复的代码框里；本文件随仓库同步更新，并写进 CI Run Summary。
 
 ```text
 ========================================================
@@ -24,26 +24,28 @@
      git push 被网络策略拦，改走 Git Data API 同步，tree 与仓库一致。
      产出 app-debug-skeleton 空壳 APK。
 
-【本轮做了什么 R4】自主推进，未新增成品功能，只添砖加瓦
+【本轮做了什么 R4】自主推进，只添砖加瓦，未出成品
  ✅ 拆成 4 个模块：
     :core:model（纯 JVM：CrawlConfig / VideoHit / MediaFormat / 契约）
     :core:crawler（纯 JVM+Jsoup：BfsCrawlPlanner / UrlNormalizer / RobotsPolicy）
     :core:sniffer（Android：SniffingWebViewClient / VideoDetector）
-    :app（MainActivity 可交互界面 + CrawlPipelineImpl 编排）
+    :app（可交互 MainActivity + CrawlPipelineImpl 编排）
  ✅ 核心不自己写：复刻 super-video-downloader 三处核心
     VideoUtils → MediaFormat.kt（后缀/Content-Type/#EXTM3U 魔数三级判定）
     CustomWebViewClient → SniffingWebViewClient.kt（主帧跳过、请求头透传、
       返回 null 不吞响应）
     IVideoDetector + TabViewModel → VideoDetector.kt（去重 + Range 异步探测）
-    每个文件头注明原文件路径；仓库整体转 GPL-3.0，补 LICENSE + NOTICE
+    文件头均注明原文件路径；仓库整体转 GPL-3.0，补 LICENSE + NOTICE
  ✅ 自己写上游没有的那层：给首页 → Jsoup 抽同域链接 → 去重 BFS →
-    深度/页数/间隔/robots 可控；HTML 里的 <video>/<source> 直链一并交出
+    深度/页数/间隔/robots 可控；HTML 里 <video>/<source> 直链一并交出
  ✅ 界面能真跑：输入 https 网址 → 逐页 WebView 真加载 → 命中 mp4/m3u8/
     mpd/webm/flv 去重列出（只列不下载）
- ✅ 纯 JVM 单测 13 例（格式判定、URL 归一化、BFS 深度/去重/上限、
-    robots、媒体直链、请求头透传），CI 增加 :core:model:test :core:crawler:test
- ✅ 架构/上游/README/NOTICE/CI 文档全部同步到 R4
- ⚠ 仍未做：yt-dlp 下载引擎、队列、参数面板、Compose、成品 APK 功能
+ ✅ 纯 JVM 单测 14 例全绿（格式判定、URL 归一化、BFS 深度/去重/上限、
+    robots、媒体直链、请求头透传）；CI 增加 :core:model:test :core:crawler:test
+ ✅ 架构/上游/README/NOTICE/CI 文档同步到 R4；GPLv3 全文入库
+ ⚠ 排障三次：Kotlin android/jvm 双插件 classpath 冲突 → settings 统一钉版本；
+    HttpURLConnection.getHeaderField 写法；单测日志回传改为关键行 grep
+ ⚠ 仍未做：yt-dlp 下载引擎、队列、参数面板、Compose、成品功能
  ⚠ 合规：默认 respectRobots=true，只爬有权保存的内容，不碰 DRM/付费墙
 
 【后面准备做什么】
@@ -58,7 +60,8 @@
 
 【CI】
  workflow: .github/workflows/android-ci.yml
- 任务    : 单测 → assembleDebug → 上传 app-debug-r4 APK + JUnit 报告
- 状态    : ⏳ 本轮同步后运行中（上一轮 R3 为 success）
+ 最近一次: ✅ success (run 43392218727)
+ 单测    : ✅ 14 例全绿
+ 产物    : app-debug-r4 (1.68 MB 可安装 APK) + junit-reports
 ========================================================
 ```
